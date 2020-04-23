@@ -9,8 +9,8 @@ public class DoorNetwork : MonoBehaviour
     void Start()
     {
         this.transform.parent = GameObject.Find("Anchor").transform.Find("Map").transform;
-        this.transform.position = door.transform.position;
-        this.transform.rotation = door.transform.rotation;
+        //this.transform.position = door.transform.position;
+        //this.transform.rotation = door.transform.rotation;
     }
 
     // Update is called once per frame

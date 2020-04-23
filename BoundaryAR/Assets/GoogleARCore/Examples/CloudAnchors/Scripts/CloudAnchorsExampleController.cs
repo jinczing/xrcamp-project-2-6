@@ -49,6 +49,8 @@ namespace GoogleARCore.Examples.CloudAnchors
         public GameObject PlaneDiscovery;
         static public bool isPut = true;
 
+        [SerializeField] private GameObject ARCoreDevice;
+
         /// <summary>
         /// The root for ARCore-specific GameObjects in the scene.
         /// </summary>
@@ -323,25 +325,44 @@ namespace GoogleARCore.Examples.CloudAnchors
             
             if(isPut)
             {
-                Debug.Log(touch.position);
-                // Raycast against the location the player touched to search for planes.
-                if (Application.platform != RuntimePlatform.IPhonePlayer)
+
+                RaycastHit interactHit;
+
+                Vector3 near = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.nearClipPlane));
+                Vector3 far = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.farClipPlane));
+                Debug.DrawRay(near, far - near);
+                if (Physics.Raycast(near, far - near, out interactHit, 10, interactableLayerMask, QueryTriggerInteraction.Ignore))
                 {
-                    if (ARCoreWorldOriginHelper.Raycast(touch.position.x, touch.position.y,
-                            TrackableHitFlags.PlaneWithinPolygon, out arcoreHitResult))
+                    if (interactHit.collider.CompareTag("Wall"))
                     {
-                        m_LastHitPose = arcoreHitResult.Pose;
+                        Debug.Log("Wall");
+                        interactHit.collider.gameObject.GetComponentInParent<WallBehavior>().InstantiatePortal();
                     }
                 }
                 else
                 {
-                    Pose hitPose;
-                    if (m_ARKit.RaycastPlane(
-                        ARKitFirstPersonCamera, touch.position.x, touch.position.y, out hitPose))
+                    // Raycast against the location the player touched to search for planes.
+                    if (Application.platform != RuntimePlatform.IPhonePlayer)
                     {
-                        m_LastHitPose = hitPose;
+                        if (ARCoreWorldOriginHelper.Raycast(touch.position.x, touch.position.y,
+                                TrackableHitFlags.PlaneWithinPolygon, out arcoreHitResult))
+                        {
+                            m_LastHitPose = arcoreHitResult.Pose;
+                        }
+                    }
+                    else
+                    {
+                        Pose hitPose;
+                        if (m_ARKit.RaycastPlane(
+                            ARKitFirstPersonCamera, touch.position.x, touch.position.y, out hitPose))
+                        {
+                            m_LastHitPose = hitPose;
+                        }
                     }
                 }
+
+
+                
             }
             else
             {
@@ -353,7 +374,7 @@ namespace GoogleARCore.Examples.CloudAnchors
                 Vector3 near = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.nearClipPlane));
                 Vector3 far = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.farClipPlane));
                 Debug.DrawRay(near, far - near);
-                if (Physics.Raycast(near, far - near, out interactHit))
+                if (Physics.Raycast(near, far - near, out interactHit, 10, interactableLayerMask, QueryTriggerInteraction.Ignore))
                 {
                     Debug.Log("Hit Interactable");
                     if (interactHit.collider.CompareTag("Door"))
@@ -423,6 +444,7 @@ namespace GoogleARCore.Examples.CloudAnchors
         /// <param name="anchorTransform">Transform of the Cloud Anchor.</param>
         public void SetWorldOrigin(Transform anchorTransform)
         {
+            ARCoreDevice = GameObject.Find("ARCore Device");
             if (IsOriginPlaced)
             {
                 Debug.LogWarning("The World Origin can be set only once.");
@@ -609,7 +631,6 @@ namespace GoogleARCore.Examples.CloudAnchors
             bool isBase = true;
             if (Mathf.Abs(m_LastHitPose.Value.position.y) > 0.2f)
                isBase = false;
-            
 
 
 
@@ -618,7 +639,7 @@ namespace GoogleARCore.Examples.CloudAnchors
             if (!isHorizontal)
             {
                 GameObject.Find("LocalPlayer").GetComponent<LocalPlayerController>()
-                .CmdSpawnMonitor(m_LastHitPose.Value.position, m_LastHitPose.Value.rotation);
+                .CmdSpawnPortal(m_LastHitPose.Value.position, ARCoreDevice.transform.localToWorldMatrix * (m_LastHitPose.Value.rotation * Vector3.up));
             }
             else if (!isBase)
             {

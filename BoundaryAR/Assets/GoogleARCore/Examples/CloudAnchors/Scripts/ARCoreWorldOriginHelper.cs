@@ -122,6 +122,8 @@ namespace GoogleARCore.Examples.CloudAnchors
                                                          ARCoreDeviceTransform.rotation));
             ARCoreDeviceTransform.SetPositionAndRotation(worldPose.position, worldPose.rotation);
 
+
+
             foreach (GameObject plane in m_PlanesBeforeOrigin)
             {
                 if (plane != null)

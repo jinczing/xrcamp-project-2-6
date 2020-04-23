@@ -38,8 +38,13 @@ namespace GoogleARCore.Examples.CloudAnchors
         public GameObject LadderPrefab;
         public GameObject MonitorPrefab;
         public GameObject PawnPrefab;
+        public GameObject PortalPrefab;
 
         public GameObject ManipulatorPrefab;
+
+        public GameObject Head;
+        public GameObject LeftHand;
+        public GameObject RightHand;
 
         /// <summary>
         /// The Anchor model that will represent the anchor in the scene.
@@ -71,6 +76,11 @@ namespace GoogleARCore.Examples.CloudAnchors
 
             // Anchor must be hosted in the device.
             anchorObject.GetComponent<AnchorController>().HostLastPlacedAnchor(anchor);
+
+            PilotNetwork.instance.SetupPilot();
+            GameObject.Find("Head-f").GetComponent<IkTracker>().SetupIkTracker();
+            GameObject.Find("LeftHand-f").GetComponent<IkTracker>().SetupIkTracker();
+            GameObject.Find("RightHand-f").GetComponent<IkTracker>().SetupIkTracker();
 
             // Host can spawn directly without using a Command because the server is running in this
             // instance.
@@ -125,14 +135,15 @@ namespace GoogleARCore.Examples.CloudAnchors
 #pragma warning disable 618
         [Command]
 #pragma warning restore 618
-        public void CmdSpawnMonitor(Vector3 position, Quaternion rotation)
+        public void CmdSpawnPortal(Vector3 position, Vector3 direction)
         {
             // Instantiate Star model at the hit pose.
-            var monitorObject = Instantiate(MonitorPrefab, position, rotation);
+            var portalObject = Instantiate(PortalPrefab, position, Quaternion.identity);
+            portalObject.transform.forward = direction;
 
             // Spawn the object in all clients.
 #pragma warning disable 618
-            NetworkServer.Spawn(monitorObject);
+            NetworkServer.Spawn(portalObject);
 #pragma warning restore 618
         }
 

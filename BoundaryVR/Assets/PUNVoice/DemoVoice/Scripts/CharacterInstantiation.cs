@@ -19,21 +19,28 @@ namespace ExitGames.Demos.DemoPunVoice {
 
         public static event OnCharacterInstantiated CharacterInstantiated;
 
+        [SerializeField] private GameObject pilot;
+
         public new void OnJoinedRoom() {
             if (this.PrefabsToInstantiate != null) {
-                GameObject o = PrefabsToInstantiate[(PhotonNetwork.player.ID - 1) % 4];
+
+                //GameObject o = PrefabsToInstantiate[(PhotonNetwork.player.ID - 1) % 4];
+                GameObject o = PrefabsToInstantiate[1];
+                //GameObject oo = PhotonNetwork.Instantiate(pilot.name, Vector3.zero, Quaternion.identity, 0);
+                //oo.transform.parent = GameObject.Find("Anchor").transform;
                 //Debug.Log("Instantiating: " + o.name);
                 Vector3 spawnPos = Vector3.zero;
-                if (this.SpawnPosition != null) {
-                    spawnPos = this.SpawnPosition.position;
-                }
-                Vector3 random = Random.insideUnitSphere;
-                random = this.PositionOffset * random.normalized;
-                spawnPos += random;
-                spawnPos.y = 0;
+                //if (this.SpawnPosition != null) {
+                //    spawnPos = this.SpawnPosition.position;
+                //}
+                //Vector3 random = Random.insideUnitSphere;
+                //random = this.PositionOffset * random.normalized;
+                //spawnPos += random;
+                //spawnPos.y = 0;
                 //sCamera.main.transform.position += spawnPos;
 
                 o = PhotonNetwork.Instantiate(o.name, spawnPos, Quaternion.identity, 0);
+                o.transform.parent = GameObject.Find("[CameraRig]").transform;
                 if (CharacterInstantiated != null) {
                     CharacterInstantiated(o);
                 }

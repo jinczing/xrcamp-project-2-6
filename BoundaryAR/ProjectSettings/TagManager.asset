@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ManipulationSystem
   - Door
+  - Wall
   layers:
   - Default
   - TransparentFX

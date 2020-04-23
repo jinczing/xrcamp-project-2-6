@@ -86,6 +86,8 @@ MonoBehaviour:
   MonitorPrefab: {fileID: 6952174207077819125, guid: e3fd320ddfeb4f74aa124e4400dcfeef,
     type: 3}
   PawnPrefab: {fileID: 1513252861858756, guid: 8b604092cbb3d482da82845b61a6809b, type: 3}
+  PortalPrefab: {fileID: 7232496368366458452, guid: cb044bb1809e4be499cfb4bb69bcce24,
+    type: 3}
   ManipulatorPrefab: {fileID: 1122865395318488, guid: 24556cd4924884d9aaa3d80135c8021d,
     type: 3}
   AnchorPrefab: {fileID: 1930613698465500, guid: d7e51cffc46904f65957fa3aeb255467,
